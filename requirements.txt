@@ -1,0 +1,20 @@
+Summary
+Need automation based on terms . 
+For example one of the terms - Equipment with no hourly rate listed shall be invoiced at a minimum of the daily rate. 
+Equipment rates are based on usuage of twenty four (24) hours per day and seven (7) days per week. 
+Invoicing will be in accordance with the following: Hourly rates will be used for up to 16 hours in a day. 
+At or After 16 hours in a day (24-hr period), use the daily rate. At or After 3 days in a week use the weekly rate. 
+At or After 3 weeks in a month, use the monthly rate. The monthly rate is valid through a 28 day period.
+
+✅ Understanding the Requirement
+You're invoicing equipment based on the following tiered rate rules:
+If no hourly rate exists, default to the daily rate.
+Base usage is assumed to be 24/7 (24 hrs/day, 7 days/week).
+Invoicing rules:
+Use hourly rate if usage is up to 16 hours per day.
+Use daily rate if usage is ≥16 hours in a single day.
+Use weekly rate if usage spans 3 or more days in a single week.
+Use monthly rate if usage spans 3 or more weeks in a month.
+Monthly rate is valid for up to 28 days.
+
+
