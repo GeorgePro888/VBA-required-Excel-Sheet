@@ -1,0 +1,73 @@
+🧩 How to Integrate with Excel Using Macros (VBA)
+1. Spreadsheet Layout Suggestion
+
+| Equipment | Hourly Rate | Daily Rate | Weekly Rate | Monthly Rate | Usage Hours (Day 1) | ... | Usage Hours (Day 28) | Invoiced Rate Type | Invoiced Amount |
+| --------- | ----------- | ---------- | ----------- | ------------ | ------------------- | --- | -------------------- | ------------------ | --------------- |
+
+2. Logic via Excel Macro (VBA)
+The VBA macro would:
+Loop through each row (equipment).
+Calculate total hours per day/week/month.
+Apply the logic:
+If usage is ≥16 hours in any day → use daily rate.
+If usage spans 3+ days in any week → use weekly rate.
+If usage spans 3+ weeks → use monthly rate.
+If no hourly rate → default to daily rate.
+Output the selected rate type and amount in designated columns.
+
+3. Sample VBA Snippet
+
+Sub CalculateInvoicing()
+    Dim ws As Worksheet
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    
+    Dim lastRow As Long
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    
+    Dim i As Long
+    For i = 2 To lastRow
+        Dim hourly As Double, daily As Double, weekly As Double, monthly As Double
+        Dim usageHours(1 To 28) As Double
+        Dim totalDaysUsed As Integer, totalWeeksUsed As Integer
+        Dim j As Integer, weekUsageDays As Integer
+        Dim startCol As Integer: startCol = 6
+        
+        hourly = ws.Cells(i, 2).Value
+        daily = ws.Cells(i, 3).Value
+        weekly = ws.Cells(i, 4).Value
+        monthly = ws.Cells(i, 5).Value
+        
+        totalDaysUsed = 0: totalWeeksUsed = 0
+        
+        ' Loop over 28 days
+        For j = 1 To 28
+            usageHours(j) = ws.Cells(i, startCol + j - 1).Value
+            If usageHours(j) > 0 Then totalDaysUsed = totalDaysUsed + 1
+        Next j
+        
+        totalWeeksUsed = WorksheetFunction.RoundUp(totalDaysUsed / 7, 0)
+        
+        Dim rateType As String
+        Dim invoiceAmount As Double
+        
+        If totalWeeksUsed >= 3 Then
+            rateType = "Monthly"
+            invoiceAmount = monthly
+        ElseIf totalDaysUsed >= 3 Then
+            rateType = "Weekly"
+            invoiceAmount = weekly
+        Else
+            Dim maxHours As Double: maxHours = Application.WorksheetFunction.Max(usageHours)
+            If maxHours >= 16 Or hourly = 0 Then
+                rateType = "Daily"
+                invoiceAmount = daily * totalDaysUsed
+            Else
+                rateType = "Hourly"
+                invoiceAmount = hourly * WorksheetFunction.Sum(usageHours)
+            End If
+        End If
+        
+        ws.Cells(i, 35).Value = rateType
+        ws.Cells(i, 36).Value = invoiceAmount
+    Next i
+End Sub
